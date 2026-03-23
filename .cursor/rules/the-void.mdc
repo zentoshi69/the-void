@@ -1,0 +1,54 @@
+---
+description: Core rules for The Void — a premium private capital command platform
+alwaysApply: true
+---
+
+# The Void
+
+The Void is a premium private capital command platform — an operator-grade system for capital overview, market intelligence, opportunity evaluation, strategy control, inventory management, risk control, execution lifecycle visibility, replay/lab simulation, and audit/admin governance.
+
+It is NOT a retail exchange, wallet, generic admin panel, or toy dashboard.
+
+## Workflow Discipline
+
+- **Inspect before changing.** Summarize what exists, what can be reused, and what is missing. State the exact phase before generating code.
+- **Change only what is necessary.** Do not touch unrelated files. Prefer incremental changes over large rewrites. Do not rename or rewrite major parts without strong reason.
+- **Build phase by phase.** Work in controlled implementation phases. Finish the current phase, then stop. Provide a short verification checklist after each phase.
+
+## Architecture
+
+- Monorepo: `apps/web`, `apps/api`, shared packages.
+- Controllers stay thin. Business logic lives in services/core modules.
+- Shared types are centralized.
+- Explicit state machines where lifecycle matters.
+- No giant files, no hidden magic.
+
+## Coding Standards
+
+- Strongly typed TypeScript everywhere.
+- Clear naming, small cohesive modules.
+- Honest mocks and simulations — no fake production claims, no dead abstractions, no duplicated type systems.
+- Code must compile, imports must resolve, routes/modules must register, schema/types must stay aligned. State limitations honestly.
+
+## Product & UX
+
+- Operator-first information architecture. Build for operators, treasury users, analysts, strategy users, and admins.
+- Prioritize clarity, control, explainability, and premium execution UX.
+- Do not turn the UI into generic SaaS or crypto-casino styling. The design must feel premium, institutional, and dense-but-readable.
+
+## Visual System
+
+| Token | Value |
+|---|---|
+| Background | Warm off-white / subtle cream |
+| Text | Super dark purple (not black) |
+| Primary accent | Bright refined orange |
+| Positive/healthy | Mint-cyan / blue-green |
+| Style | Elegant borders, subtle shadows, excellent tables, premium cards |
+
+## Backend Realism
+
+- Use lawful, documented, auditable infrastructure only.
+- Use mock connectors and simulated venues in MVP where needed.
+- Data must be plausible, not random nonsense.
+- Expose typed APIs and consistent websocket events.
