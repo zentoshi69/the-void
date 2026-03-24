@@ -21,36 +21,25 @@ services:
     environment:
       - PORT=4000
       - REDIS_URL=redis://redis:6379
-      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:8080}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
       - SEPOLIA_RPC=${SEPOLIA_RPC:-https://rpc.sepolia.org}
       - FUJI_RPC=${FUJI_RPC:-https://api.avax-test.network/ext/bc/C/rpc}
       - GATEWAY_SEPOLIA=${GATEWAY_SEPOLIA:-0x0000000000000000000000000000000000000000}
       - GATEWAY_FUJI=${GATEWAY_FUJI:-0x0000000000000000000000000000000000000000}
+    ports:
+      - "4000:4000"
 
   web:
     build:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - NEXT_PUBLIC_BACKEND_URL=${PUBLIC_URL:-http://localhost:8080}
+        - NEXT_PUBLIC_BACKEND_URL=${PUBLIC_URL:-http://localhost:4000}
     restart: unless-stopped
     depends_on:
-      - api
-
-  caddy:
-    image: caddy:2-alpine
-    restart: unless-stopped
-    depends_on:
-      - web
       - api
     ports:
-      - "${CADDY_PORT:-8080}:80"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - caddy_data:/data
-      - caddy_config:/config
+      - "3000:3000"
 
 volumes:
   redis_data:
-  caddy_data:
-  caddy_config:
