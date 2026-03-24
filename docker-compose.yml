@@ -1,36 +1,56 @@
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: void-postgres
-    restart: unless-stopped
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
-    environment:
-      POSTGRES_USER: void
-      POSTGRES_PASSWORD: void_dev
-      POSTGRES_DB: the_void
-    volumes:
-      - void_pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U void -d the_void"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   redis:
     image: redis:7-alpine
-    container_name: void-redis
     restart: unless-stopped
-    ports:
-      - "${REDIS_PORT:-6379}:6379"
     volumes:
-      - void_redis:/data
+      - redis_data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
+      interval: 5s
+      timeout: 3s
       retries: 5
 
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      - PORT=4000
+      - REDIS_URL=redis://redis:6379
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:8080}
+      - SEPOLIA_RPC=${SEPOLIA_RPC:-https://rpc.sepolia.org}
+      - FUJI_RPC=${FUJI_RPC:-https://api.avax-test.network/ext/bc/C/rpc}
+      - GATEWAY_SEPOLIA=${GATEWAY_SEPOLIA:-0x0000000000000000000000000000000000000000}
+      - GATEWAY_FUJI=${GATEWAY_FUJI:-0x0000000000000000000000000000000000000000}
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_BACKEND_URL=${PUBLIC_URL:-http://localhost:8080}
+    restart: unless-stopped
+    depends_on:
+      - api
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - web
+      - api
+    ports:
+      - "${CADDY_PORT:-8080}:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+
 volumes:
-  void_pgdata:
-  void_redis:
+  redis_data:
+  caddy_data:
+  caddy_config:

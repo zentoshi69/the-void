@@ -1,21 +1,10 @@
 {
-  "name": "the-void",
-  "version": "0.1.0",
+  "name": "void-mvp",
   "private": true,
-  "description": "The Void — premium private capital command platform",
   "scripts": {
-    "dev": "turbo dev",
-    "build": "turbo build",
-    "lint": "turbo lint",
-    "type-check": "turbo type-check",
-    "clean": "turbo clean && rm -rf node_modules"
-  },
-  "devDependencies": {
-    "turbo": "^2.4.0",
-    "typescript": "^5.7.0"
-  },
-  "packageManager": "pnpm@9.15.0",
-  "engines": {
-    "node": ">=20.0.0"
+    "dev:backend": "cd backend && npm run start:dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build:contracts": "cd contracts && npx hardhat compile",
+    "test:contracts": "cd contracts && npx hardhat test"
   }
 }

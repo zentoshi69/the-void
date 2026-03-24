@@ -1,54 +1,64 @@
 ---
-description: Core rules for The Void — a premium private capital command platform
+description: Core rules for VOID — a private cross-chain DEX with an in-memory clearing engine
 alwaysApply: true
 ---
 
-# The Void
+# VOID — Private Clearing Bridge Protocol
 
-The Void is a premium private capital command platform — an operator-grade system for capital overview, market intelligence, opportunity evaluation, strategy control, inventory management, risk control, execution lifecycle visibility, replay/lab simulation, and audit/admin governance.
+VOID is a private cross-chain DEX. It is NOT a public blockchain, wallet, admin panel, or retail exchange. It is a bridge protocol with a private in-memory clearing engine sitting between public chains.
 
-It is NOT a retail exchange, wallet, generic admin panel, or toy dashboard.
-
-## Workflow Discipline
-
-- **Inspect before changing.** Summarize what exists, what can be reused, and what is missing. State the exact phase before generating code.
-- **Change only what is necessary.** Do not touch unrelated files. Prefer incremental changes over large rewrites. Do not rename or rewrite major parts without strong reason.
-- **Build phase by phase.** Work in controlled implementation phases. Finish the current phase, then stop. Provide a short verification checklist after each phase.
+**The technical model:**
+- Users lock assets on Chain A via a smart contract (VoidGateway)
+- A private NestJS clearing engine ingests encrypted trade intents (never written to any DB)
+- The engine nets opposing trades mathematically — reducing N trades to minimal net settlements
+- A ZK proof is generated over the net state
+- Only the proof + net settlement amounts are posted on-chain on Chain B
+- The clearing sheet is wiped from memory after each batch
+- Individual trade details (amounts, wallets, counterparties) NEVER touch a public blockchain
 
 ## Architecture
 
-- Monorepo: `apps/web`, `apps/api`, shared packages.
-- Controllers stay thin. Business logic lives in services/core modules.
-- Shared types are centralized.
-- Explicit state machines where lifecycle matters.
-- No giant files, no hidden magic.
+```
+contracts/    Solidity 0.8.20, Hardhat, OpenZeppelin 5.x, viem
+backend/      NestJS 10, TypeScript strict, viem 2.x, Redis (pub/sub), Socket.io
+frontend/     Next.js 14 App Router, TypeScript, Tailwind CSS, wagmi v2, viem 2.x, RainbowKit
+```
+
+## Critical Rules
+
+1. **Never emit amounts in contract events** — amounts live inside commitment hashes only
+2. **Never write individual intents to any database** — clearing sheet is RAM only
+3. **Never expose amounts/wallets in API responses** — LiveSheetEntry has no trade details
+4. **TypeScript strict mode everywhere** — no `any` except where truly unavoidable
+5. **All numbers through BigInt on-chain** — no floating point math for token amounts
+6. **Error boundaries on all async ops** — the engine must not crash on bad intents
+7. **Redis pub/sub for WebSocket** — not direct socket state, so multi-instance works
+8. **Font is Courier New everywhere** — no Inter, no system fonts
+9. **Theme objects passed as props** — inline styles with JS theme injection
+10. **Nullifier check before every release** — prevent double-spend absolutely
+
+## Workflow Discipline
+
+- **Inspect before changing.** Summarize what exists, what can be reused, and what is missing.
+- **Change only what is necessary.** Do not touch unrelated files.
+- **Build phase by phase.** Finish the current phase, verify, then stop.
 
 ## Coding Standards
 
 - Strongly typed TypeScript everywhere.
 - Clear naming, small cohesive modules.
-- Honest mocks and simulations — no fake production claims, no dead abstractions, no duplicated type systems.
-- Code must compile, imports must resolve, routes/modules must register, schema/types must stay aligned. State limitations honestly.
-
-## Product & UX
-
-- Operator-first information architecture. Build for operators, treasury users, analysts, strategy users, and admins.
-- Prioritize clarity, control, explainability, and premium execution UX.
-- Do not turn the UI into generic SaaS or crypto-casino styling. The design must feel premium, institutional, and dense-but-readable.
+- Honest mocks and simulations — no fake production claims.
+- Code must compile, imports must resolve.
 
 ## Visual System
 
-| Token | Value |
-|---|---|
-| Background | Warm off-white / subtle cream |
-| Text | Super dark purple (not black) |
-| Primary accent | Bright refined orange |
-| Positive/healthy | Mint-cyan / blue-green |
-| Style | Elegant borders, subtle shadows, excellent tables, premium cards |
+- **Dark theme**: near-black (#07070A), green accent (#00E676), terminal aesthetic
+- **Light theme**: cool gray (#F3F4F7), orange accent (#F06000)
+- **Font**: Courier New everywhere — monospace terminal feel
+- **Style**: Dense, minimal, operator-grade — NOT generic SaaS
 
-## Backend Realism
+## What Is Mock vs Production Ready
 
-- Use lawful, documented, auditable infrastructure only.
-- Use mock connectors and simulated venues in MVP where needed.
-- Data must be plausible, not random nonsense.
-- Expose typed APIs and consistent websocket events.
+**Production ready:** VoidGateway.sol, netting algorithm, WebSocket event flow, commitment hash derivation, threshold signature verification.
+
+**MVP mock (TODO):** ZK proof (currently keccak256), stealth addresses (simplified), amount decryption (simulated), threshold (single validator on testnet).
