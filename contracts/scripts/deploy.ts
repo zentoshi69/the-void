@@ -3,6 +3,14 @@ import { ethers, network } from "hardhat";
 async function main() {
   console.log(`\nDeploying VoidGateway on network: ${network.name}\n`);
 
+  const [deployer] = await ethers.getSigners();
+  console.log("Deployer:", deployer.address);
+  console.log(
+    "Balance:",
+    ethers.formatEther(await ethers.provider.getBalance(deployer.address)),
+    "ETH\n"
+  );
+
   const validator1 = ethers.Wallet.createRandom();
   const validator2 = ethers.Wallet.createRandom();
   const validator3 = ethers.Wallet.createRandom();
@@ -54,7 +62,10 @@ async function main() {
   console.log("Threshold:    ", threshold);
   console.log("Native token: ", ethers.ZeroAddress);
   console.log("Test USDC:    ", testUsdcAddress);
+  console.log("INTENT_TTL:    7 days");
   console.log("--------------------------\n");
+  console.log("SAVE THESE VALIDATOR KEYS — you need them for the backend.");
+  console.log(`\nUpdate .env:\nGATEWAY_${network.name.toUpperCase()}=${gatewayAddress}\n`);
 }
 
 main().catch((error) => {

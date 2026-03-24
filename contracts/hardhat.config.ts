@@ -30,6 +30,15 @@ const config: HardhatUserConfig = {
       accounts: [VALIDATOR_PRIVATE_KEY],
     },
   },
+  etherscan: {
+    apiKey: {
+      sepolia: process.env.ETHERSCAN_API_KEY || "",
+      avalancheFujiTestnet: "snowtrace",
+    },
+  },
+  sourcify: {
+    enabled: true,
+  },
 };
 
 export default config;

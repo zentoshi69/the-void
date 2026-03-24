@@ -39,6 +39,7 @@ export const GATEWAY_ABI = [
     type: "function" as const,
     name: "cancelIntent",
     inputs: [
+      { name: "commitmentHash", type: "bytes32" },
       { name: "token", type: "address" },
       { name: "amount", type: "uint256" },
       { name: "targetChainId", type: "uint256" },
@@ -50,9 +51,19 @@ export const GATEWAY_ABI = [
   },
   {
     type: "function" as const,
+    name: "rescueExpiredIntent",
+    inputs: [
+      { name: "commitmentHash", type: "bytes32" },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable" as const,
+  },
+  {
+    type: "function" as const,
     name: "settleBatch",
     inputs: [
       { name: "proofHash", type: "bytes32" },
+      { name: "commitments", type: "bytes32[]" },
       { name: "nullifiers", type: "bytes32[]" },
       { name: "recipients", type: "address[]" },
       { name: "tokens", type: "address[]" },
@@ -91,6 +102,16 @@ export const GATEWAY_ABI = [
     inputs: [
       { name: "nullifier", type: "bytes32", indexed: true },
       { name: "recipient", type: "address", indexed: true },
+      { name: "token", type: "address", indexed: true },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event" as const,
+    name: "IntentCancelled",
+    inputs: [
+      { name: "commitmentHash", type: "bytes32", indexed: true },
+      { name: "depositor", type: "address", indexed: true },
       { name: "token", type: "address", indexed: true },
     ],
     anonymous: false,

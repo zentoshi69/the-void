@@ -1,4 +1,4 @@
-import { keccak256, encodePacked, toHex } from "viem";
+import { keccak256, encodePacked, encodeAbiParameters, toHex } from "viem";
 
 export function buildCommitmentHash(params: {
   sender: `0x${string}`;
@@ -12,8 +12,15 @@ export function buildCommitmentHash(params: {
     encodePacked(["address"], [params.recipientAddress])
   );
   return keccak256(
-    encodePacked(
-      ["address", "address", "uint256", "uint256", "bytes32", "bytes32"],
+    encodeAbiParameters(
+      [
+        { type: "address" },
+        { type: "address" },
+        { type: "uint256" },
+        { type: "uint256" },
+        { type: "bytes32" },
+        { type: "bytes32" },
+      ],
       [params.sender, params.token, params.amount, params.targetChainId, recipientHash, params.salt]
     )
   );
