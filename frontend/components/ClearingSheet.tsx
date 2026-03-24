@@ -51,8 +51,9 @@ function getPhaseColor(phase: string, theme: Theme): string {
   switch (phase) {
     case "COLLECTING": return theme.accent;
     case "MATCHING": return theme.yellow;
+    case "NETTING": return theme.orange;
     case "PROVING": return theme.blue;
-    case "SETTLING": return theme.orange;
+    case "ERASING": return theme.red;
     default: return theme.textDim;
   }
 }

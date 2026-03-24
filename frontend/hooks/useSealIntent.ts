@@ -34,7 +34,9 @@ export function useSealIntent() {
         if (!token) throw new Error(`Token ${params.tokenSymbol} not found on chain ${chainId}`);
 
         const gateway = GATEWAY_ADDRESSES[chainId];
-        if (!gateway) throw new Error(`No gateway for chain ${chainId}`);
+        if (!gateway || gateway === "0x0000000000000000000000000000000000000000") {
+          throw new Error(`No gateway deployed on chain ${chainId} — deploy VoidGateway first`);
+        }
 
         const amount = parseUnits(params.amount, token.decimals);
         const salt = generateSalt();

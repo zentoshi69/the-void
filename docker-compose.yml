@@ -22,6 +22,7 @@ services:
       - PORT=4000
       - REDIS_URL=redis://redis:6379
       - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
+      - DEMO_MODE=${DEMO_MODE:-true}
       - SEPOLIA_RPC=${SEPOLIA_RPC:-https://rpc.sepolia.org}
       - FUJI_RPC=${FUJI_RPC:-https://api.avax-test.network/ext/bc/C/rpc}
       - GATEWAY_SEPOLIA=${GATEWAY_SEPOLIA:-0x0000000000000000000000000000000000000000}

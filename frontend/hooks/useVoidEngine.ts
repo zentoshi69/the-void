@@ -27,7 +27,7 @@ export interface PublicStats {
   totalVolumeUsd: number;
 }
 
-type Phase = "COLLECTING" | "MATCHING" | "PROVING" | "SETTLING" | "IDLE";
+type Phase = "COLLECTING" | "MATCHING" | "NETTING" | "PROVING" | "ERASING";
 
 interface InitPayload {
   sheet: LiveSheetEntry[];
@@ -100,22 +100,25 @@ export function useVoidEngine() {
       startTimer(data.window.secondsLeft);
     });
 
-    socket.on("sheet", (event: SheetEvent) => {
+    socket.on("sheet", (event: SheetEvent & { phase?: string }) => {
       if (event.type === "INTENT_SEALED" && event.entry) {
         setSheet((prev) => [...prev, event.entry!]);
-      } else if (event.type === "STATUS_UPDATE" && event.updates) {
-        setSheet((prev) =>
-          prev.map((entry) => {
-            const update = event.updates!.find((u) => u.id === entry.id);
-            return update ? { ...entry, status: update.status } : entry;
-          })
-        );
+      } else if (event.type === "STATUS_UPDATE") {
+        if (event.phase) setPhase(event.phase);
+        if (event.updates) {
+          setSheet((prev) =>
+            prev.map((entry) => {
+              const update = event.updates!.find((u) => u.id === entry.id);
+              return update ? { ...entry, status: update.status } : entry;
+            })
+          );
+        }
       }
     });
 
     socket.on("batch", (event: BatchEvent) => {
       if (event.type === "BATCH_SETTLED") {
-        setBatches((prev) => [event.batch, ...prev]);
+        setBatches((prev) => [event.batch, ...prev].slice(0, 50));
         setStats(event.stats);
         setTimeout(() => {
           setSheet([]);
@@ -123,11 +126,6 @@ export function useVoidEngine() {
           startTimer(BATCH_WINDOW_SECONDS);
         }, 2000);
       }
-    });
-
-    socket.on("phase", (data: { phase: Phase; secondsLeft: number }) => {
-      setPhase(data.phase);
-      startTimer(data.secondsLeft);
     });
 
     return () => {

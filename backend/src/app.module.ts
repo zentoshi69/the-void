@@ -4,6 +4,7 @@ import { RedisModule } from '@nestjs-modules/ioredis';
 import { ClearingModule } from './clearing/clearing.module';
 import { GatewayModule } from './gateway/gateway.module';
 import { ChainModule } from './chain/chain.module';
+import { SimulatorModule } from './simulator/simulator.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ChainModule } from './chain/chain.module';
     ClearingModule,
     GatewayModule,
     ChainModule,
+    SimulatorModule,
   ],
 })
 export class AppModule {}
