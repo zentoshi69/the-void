@@ -1,10 +1,17 @@
 {
   "name": "void-mvp",
   "private": true,
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev:backend": "cd backend && npm run start:dev",
     "dev:frontend": "cd frontend && npm run dev",
     "build:contracts": "cd contracts && npx hardhat compile",
-    "test:contracts": "cd contracts && npx hardhat test"
+    "test:contracts": "cd contracts && npx hardhat test",
+    "ci": "npm run ci:contracts && npm run ci:backend && npm run ci:frontend",
+    "ci:contracts": "cd contracts && npm ci && npm run compile && npm test",
+    "ci:backend": "cd backend && npm ci && npm run build",
+    "ci:frontend": "cd frontend && npm ci && npm run typecheck && npm run build"
   }
 }
